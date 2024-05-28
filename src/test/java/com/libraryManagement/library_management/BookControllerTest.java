@@ -3,7 +3,7 @@
 public class BookControllerTest {
 
 }*/
-/*package com.libraryManagement.library_management;
+package com.libraryManagement.library_management;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.libraryManagement.library_management.entity.Book;
@@ -206,5 +206,5 @@ public class BookControllerTest {
                     .andExpect(jsonPath("$[0].availableCopies", is(book.getAvailableCopies())));
         }
     }
-}*/
+}
 

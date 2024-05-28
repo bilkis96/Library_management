@@ -2,6 +2,7 @@ package com.libraryManagement.library_management.controller;
 import com.libraryManagement.library_management.entity.Member;
 import com.libraryManagement.library_management.exceptions.MemberNotAvailableException;
 import com.libraryManagement.library_management.repository.MemberRepository;
+import com.libraryManagement.library_management.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,62 +15,36 @@ import java.util.Optional;
 public class MemberController {
 
     @Autowired
-    private MemberRepository memberRepository;
+    private MemberService memberService;
 
     @PostMapping
     public ResponseEntity<Member> createMember(@RequestBody Member member) {
-        Member savedMember = memberRepository.save(member);
+        Member savedMember = memberService.creatMember(member);
         return ResponseEntity.ok(savedMember);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Member> getMemberById(@PathVariable Long id) {
-        Optional<Member> member = memberRepository.findById(id);
-        if(member.isPresent()){
-            return ResponseEntity.ok(member.get());
-        }
-        else {
-            throw new MemberNotAvailableException("Member not found with id: " + id);
-        }
+        Member member = memberService.getMemberById(id);
+        return ResponseEntity.ok(member);
     }
 
     @GetMapping
     public ResponseEntity<List<Member>> getAllMembers() {
-        List<Member> members = memberRepository.findAll();
+        List<Member> members = memberService.getAllMember();
         return ResponseEntity.ok(members);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Member> updateMember(@PathVariable Long id, @RequestBody Member memberDetails) {
-        Optional<Member> optionalMember = memberRepository.findById(id);
-        if (optionalMember.isPresent()) {
-            Member member = optionalMember.get();
-            member.setName(memberDetails.getName());
-            member.setPhone(memberDetails.getPhone());
-            member.setRegisteredDate(memberDetails.getRegisteredDate());
-            Member updatedMember = memberRepository.save(member);
-            return ResponseEntity.ok(updatedMember);
-        } else {
-            throw new MemberNotAvailableException("Member not found with id: " + id);
-        }
+        Member updatedMember = memberService.updateMember(id, memberDetails);
+        return ResponseEntity.ok(updatedMember);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMember(@PathVariable Long id) {
-        Optional<Member> member = memberRepository.findById(id);
-        if (member.isPresent()) {
-            memberRepository.delete(member.get());
-            return ResponseEntity.noContent().build();
-        } else {
-           throw new MemberNotAvailableException("Member not found with id: " + id);
-        }
-    }
-
-    @GetMapping("/search")
-    public ResponseEntity<List<Member>> searchMembers(@RequestParam(required = false) String name,
-                                                      @RequestParam(required = false) String phone) {
-        List<Member> members = memberRepository.searchMembers(name, phone);
-        return ResponseEntity.ok(members);
+        memberService.deleteMemeber(id);
+        return ResponseEntity.noContent().build();
     }
 }
 

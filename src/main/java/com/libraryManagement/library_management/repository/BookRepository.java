@@ -12,4 +12,8 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     Optional<Book> findByTitle(String title);
 
     List<Book> searchBooks(String title, String author, String isbn);
+
+    void delete(Long id);
+
+    void delete(Optional<Book> optionalBook);
 }

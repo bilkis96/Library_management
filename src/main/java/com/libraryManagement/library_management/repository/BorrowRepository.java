@@ -8,13 +8,13 @@ import java.util.List;
 
 @Repository
 public interface BorrowRepository extends JpaRepository<Borrow, Long> {
-    List<Borrow> findByMember(Long memberId);
+    List<Borrow> findByMemberId(Long memberId);
 
     List<Borrow> findByBookId(Long bookId);
 
-    void delete(Long id);
+    void deleteById(Long id);
 
-    void update(Borrow borrow);
+    //void update(Borrow borrow);
 }
 
 

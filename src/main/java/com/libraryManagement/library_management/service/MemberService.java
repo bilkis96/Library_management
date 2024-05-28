@@ -46,7 +46,7 @@ public class MemberService {
     public void deleteMemeber(Long id){
         Optional<Member> optionalMember = memberRepository.findById(id);
         if(optionalMember.isPresent()){
-            memberRepository.delete(optionalMember);
+            memberRepository.deleteById(optionalMember.get().getId());
         }
         else {
             throw new MemberNotAvailableException("Memeber with id not found: " + id);

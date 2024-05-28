@@ -62,13 +62,13 @@ public class BorrowService {
         borrow.setBookId(borrowDetails.getBookId());
         borrow.setBorrowedDate(borrowDetails.getBorrowedDate());
         borrow.setDueDate(borrowDetails.getDueDate());
-        borrowRepository.update(borrow);
+        borrowRepository.save(borrow);
         return borrow;
     }
 
     public void deleteBorrow(Long id){
         Borrow borrow = getBorrowById(id);
-        borrowRepository.delete(borrow.getId());
+        borrowRepository.deleteById(borrow.getId());
     }
 
     public Borrow returnBook(Long id){
@@ -79,7 +79,7 @@ public class BorrowService {
             book.setAvailableCopies((book.getAvailableCopies()+1));
             bookRepository.save(book);
             borrow.setDueDate(LocalDate.now()); // Assuming setting the return date to today
-            borrowRepository.update(borrow);
+            borrowRepository.save(borrow);
             return borrow;
         }
         else{

@@ -46,7 +46,7 @@ public class BookService {
     public void deleteBook(Long id){
         Optional<Book> optionalBook = bookRepository.findById(id);
         if(optionalBook.isPresent()){
-            bookRepository.delete(optionalBook);
+            bookRepository.deleteById(optionalBook.get().getId());
         }
         else{
             throw new BookNotAvailableException("book not found with id: " + id);

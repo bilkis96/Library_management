@@ -12,5 +12,5 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @Query("SELECT m FROM Member m WHERE m.name LIKE %:name% OR m.phone LIKE %:phone%")
     List<Member> searchMembers(@Param("name") String name, @Param("phone") String phone);
 
-    void delete(Optional<Member> optionalMember);
+    void deleteById(Long id);
 }

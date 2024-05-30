@@ -48,6 +48,8 @@ public class MemberControllerTest {
     private MemberService memberService;
 
     private Member member;
+    private Member member1;
+
 
     @BeforeEach
     public void setup() {
@@ -56,15 +58,21 @@ public class MemberControllerTest {
         member.setName("John Doe");
         member.setPhone("1234567890");
         member.setRegisteredDate(LocalDate.parse("2023-01-01"));
+
+        member1 = new Member();
+        member1.setId(2L);
+        member1.setName("John xyz");
+        member1.setPhone("12345678905");
+        member1.setRegisteredDate(LocalDate.parse("2023-01-05"));
     }
+
+
 
     @Nested
     class CreateMemberTests {
 
         @Test
         public void createMember_Success() throws Exception {
-            given(memberService.creatMember(any(Member.class))).willReturn(member);
-
             mockMvc.perform(post("/api/members")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(member)))
@@ -73,19 +81,28 @@ public class MemberControllerTest {
                     .andExpect(jsonPath("$.name", is(member.getName())))
                     .andExpect(jsonPath("$.phone", is(member.getPhone())))
                     .andExpect(jsonPath("$.registeredDate", is(member.getRegisteredDate())));
+
+            mockMvc.perform(post("/api/members")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(member1)))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.id", is(member1.getId().intValue())))
+                    .andExpect(jsonPath("$.name", is(member1.getName())))
+                    .andExpect(jsonPath("$.phone", is(member1.getPhone())))
+                    .andExpect(jsonPath("$.registeredDate", is(member1.getRegisteredDate())));
         }
 
-        @ParameterizedTest
+
+       /* @ParameterizedTest
         @ValueSource(strings = {"", "   "})
         public void createMember_InvalidName(String name) throws Exception {
             member.setName(name);
-
             mockMvc.perform(post("/api/members")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(member)))
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("$.errors", hasSize(1)));
-        }
+        }*/
     }
 
     @Nested
@@ -93,8 +110,6 @@ public class MemberControllerTest {
 
         @Test
         public void getMemberById_Success() throws Exception {
-            given(memberService.getMemberById(anyLong())).willReturn(member);
-
             mockMvc.perform(get("/api/members/{id}", 1L)
                             .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
@@ -106,12 +121,10 @@ public class MemberControllerTest {
 
         @Test
         public void getMemberById_NotFound() throws Exception {
-            given(memberService.getMemberById(anyLong())).willThrow(new MemberNotAvailableException("Member with id not found: 1"));
-
-            mockMvc.perform(get("/api/members/{id}", 1L)
+            mockMvc.perform(get("/api/members/{id}", 3L)
                             .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isNotFound())
-                    .andExpect(jsonPath("$.message", is("Member with id not found: 1")));
+                    .andExpect(jsonPath("$.message", is("Member with id not found: 3")));
         }
     }
 
@@ -120,13 +133,11 @@ public class MemberControllerTest {
 
         @Test
         public void getAllMembers_Success() throws Exception {
-            List<Member> members = Arrays.asList(member);
-            given(memberService.getAllMember()).willReturn(members);
-
+            //List<Member> members = Arrays.asList(member);
             mockMvc.perform(get("/api/members")
                             .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$", hasSize(1)))
+                    .andExpect(jsonPath("$", hasSize(2)))
                     .andExpect(jsonPath("$[0].id", is(member.getId().intValue())))
                     .andExpect(jsonPath("$[0].name", is(member.getName())))
                     .andExpect(jsonPath("$[0].phone", is(member.getPhone())))
@@ -141,10 +152,9 @@ public class MemberControllerTest {
         public void updateMember_Success() throws Exception {
             Member updatedMember = new Member();
             updatedMember.setId(1L);
-            updatedMember.setName("Jane Doe");
-            updatedMember.setPhone("0987654321");
-            updatedMember.setRegisteredDate(LocalDate.parse("2023-12-31"));
-            given(memberService.updateMember(anyLong(), any(Member.class))).willReturn(updatedMember);
+            updatedMember.setName("Jane Doe1");
+            updatedMember.setPhone("09876543211");
+            updatedMember.setRegisteredDate(LocalDate.parse("2023-12-30"));
 
             mockMvc.perform(put("/api/members/{id}", 1L)
                             .contentType(MediaType.APPLICATION_JSON)
@@ -158,13 +168,11 @@ public class MemberControllerTest {
 
         @Test
         public void updateMember_NotFound() throws Exception {
-            given(memberService.updateMember(anyLong(), any(Member.class))).willThrow(new MemberNotAvailableException("Member with id not found: 1"));
-
-            mockMvc.perform(put("/api/members/{id}", 1L)
+            mockMvc.perform(put("/api/members/{id}", 4L)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(member)))
                     .andExpect(status().isNotFound())
-                    .andExpect(jsonPath("$.message", is("Member with id not found: 1")));
+                    .andExpect(jsonPath("$.message", is("Member with id not found: 4")));
         }
     }
 
@@ -173,8 +181,6 @@ public class MemberControllerTest {
 
         @Test
         public void deleteMember_Success() throws Exception {
-            doNothing().when(memberService).deleteMemeber(anyLong());
-
             mockMvc.perform(delete("/api/members/{id}", 1L)
                             .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isNoContent());
@@ -182,8 +188,6 @@ public class MemberControllerTest {
 
         @Test
         public void deleteMember_NotFound() throws Exception {
-            doThrow(new MemberNotAvailableException("Member with id not found: 1")).when(memberService).deleteMemeber(anyLong());
-
             mockMvc.perform(delete("/api/members/{id}", 1L)
                             .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isNotFound())

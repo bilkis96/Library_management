@@ -25,7 +25,7 @@ public class BorrowService {
     private BorrowRepository borrowRepository;
 
     public Borrow createBorrow(Borrow borrow) {
-        Optional<Book> optionalBook = bookRepository.findById(borrow.getId());
+        Optional<Book> optionalBook = bookRepository.findById(borrow.getBookId());
         if (optionalBook.isPresent()) {
             Book book = optionalBook.get();
             if (book.getAvailableCopies() > 0) {

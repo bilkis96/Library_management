@@ -12,11 +12,18 @@ import java.util.Optional;
 public interface BookRepository extends JpaRepository<Book, Long> {
     Optional<Book> findByTitle(String title);
 
-    @Query("SELECT b FROM Book b WHERE " +
-            "(:title IS NULL OR b.title LIKE %:title%) AND " +
-            "(:author IS NULL OR b.author LIKE %:author%) AND " +
-            "(:isbn IS NULL OR b.isbn LIKE %:isbn%)")
-    List<Book> searchBooks(String title, String author, String isbn);
+//    @Query("SELECT b FROM Book b WHERE " +
+//            "(:title IS NULL OR b.title LIKE %:title%) AND " +
+//            "(:author IS NULL OR b.author LIKE %:author%) AND " +
+//            "(:isbn IS NULL OR b.isbn LIKE %:isbn%)")
+//    List<Book> searchBooks(String title, String author, String isbn);
+
+    List<Book> findByTitleContainingIgnoreCase(String title);
+
+    List<Book> findByAuthorContainingIgnoreCase(String author);
+
+    List<Book> findByIsbnContainingIgnoreCase(String isbn);
+
 
     void deleteById(Long id);
 

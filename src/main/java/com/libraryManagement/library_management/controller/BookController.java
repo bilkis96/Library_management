@@ -49,10 +49,17 @@ public class BookController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<Book>> searchBooks(@RequestParam(required = false) String title,
-                                                  @RequestParam(required = false) String author,
-                                                  @RequestParam(required = false) String isbn) {
-        List<Book> books = bookService.searchBooks(title, author, isbn);
-        return ResponseEntity.ok(books);
+    public List<Book> searchBooks(@RequestParam(required = false) String title,
+                                  @RequestParam(required = false) String author,
+                                  @RequestParam(required = false) String isbn) {
+        if (title != null) {
+            return bookService.searchByTitle(title);
+        } else if (author != null) {
+            return bookService.searchByAuthor(author);
+        } else if (isbn != null) {
+            return bookService.searchByIsbn(isbn);
+        } else {
+            return bookService.getAllBooks();
+        }
     }
 }

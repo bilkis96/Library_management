@@ -48,12 +48,21 @@ public class BookService {
         if(optionalBook.isPresent()){
             bookRepository.deleteById(optionalBook.get().getId());
         }
-        else{
+        else {
             throw new BookNotAvailableException("book not found with id: " + id);
         }
     }
 
-    public List<Book> searchBooks(String title, String author, String isbn){
-        return bookRepository.searchBooks(title, author, isbn);
+    public List<Book> searchByTitle(String title) {
+        return bookRepository.findByTitleContainingIgnoreCase(title);
     }
+
+    public List<Book> searchByAuthor(String author) {
+        return bookRepository.findByAuthorContainingIgnoreCase(author);
+    }
+
+    public List<Book> searchByIsbn(String isbn) {
+        return bookRepository.findByIsbnContainingIgnoreCase(isbn);
+    }
+
 }
